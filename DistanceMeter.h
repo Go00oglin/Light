@@ -8,11 +8,11 @@
 class DistanceMeter {
   
   public:
-    static DistanceMeter* getInstance();
 
     boolean isSomebodyNear();
     void lookAround();
     void setup(int trigPin, int echoPin);
+    DistanceMeter();
     
   private:
   const int MIN_DISTANCE = 50;
@@ -22,8 +22,6 @@ class DistanceMeter {
   int echoPin;
   unsigned long lastPresence = 0;
   unsigned long lastLooking = 0;
-  static DistanceMeter* p_instance;
-  DistanceMeter();
 };
 
 #endif

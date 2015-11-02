@@ -11,24 +11,25 @@ class Switch {
     
     enum SwitchValues {
       OFF = 0,
-      ON = 1,
-      LONGON = 2
+      ONNEW = 1,
+      ON = 2,
+      LONGONNEW = 3,
+      LONGON = 4
     };
     
-    static Switch* getInstance();
-
+    Switch();
     void loop();
     void setup(int inPin);
     SwitchValues getState();
     
   private:
-  int swichPin;
-  int pinValue;
-  unsigned long startPressing;
-  const unsigned long TIME_INTERVAL = 3*1000L;
-  const long LONG_PRESSING = 1000L;
-  static Switch* p_instance;
-  Switch();
+    int swichPin;
+    SwitchValues currentState;
+    unsigned long lastOff;
+    unsigned long lastOn;
+    const unsigned long TIME_INTERVAL = 3*1000L;
+    const long LONG_PRESSING = 1000L;
+    const long BOUNCE_REDUCTION = 50;
 };
 
 #endif

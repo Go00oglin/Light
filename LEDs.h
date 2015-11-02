@@ -16,8 +16,7 @@ class LEDs {
       SHADOW = 64,
       OFF = 0
     };
-    
-    static LEDs* getInstance();
+    LEDs();    
     void setup(int pin);
     void setLight(int value); // 0 - 255
     int getLight(); 
@@ -26,12 +25,11 @@ class LEDs {
     
   private:
   int ledPin;
-  static LEDs* p_instance;
   int currentValue;
   int runningValue;
   unsigned long lastFade;
   const int FADE_DELAY = 5;
-  LEDs();
+
 };
 
 #endif

@@ -3,41 +3,44 @@
 #include "IR.h"
 #include "Switch.h"
 
+DistanceMeter * distanceMeter = new DistanceMeter();
+LEDs * leds = new LEDs();
+Switch * aSwitch = new Switch();
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin (9600); 
-  DistanceMeter::getInstance() -> setup(8 /*trig digital Pin*/, 9 /*echo digital Pin*/); 
-  LEDs::getInstance() -> setup(10); 
-  Switch::getInstance() -> setup(7);
+  distanceMeter->setup(8 /*trig digital Pin*/, 9 /*echo digital Pin*/); 
+  leds->setup(10); 
+  aSwitch->setup(7);
 }
 
 Switch::SwitchValues lastSwitchState = Switch::OFF;
 
 void loop() {
   // put your main code here, to run repeatedly:
-  DistanceMeter::getInstance() -> lookAround();
-  Switch::getInstance() -> loop();
-  boolean q = DistanceMeter::getInstance() -> isSomebodyNear();
+  distanceMeter->lookAround();
+  aSwitch->loop();
+  boolean q = distanceMeter->isSomebodyNear();
   //Serial.println(q);
   if (q) {
-    LEDs::getInstance() -> fade(LEDs::MAX);
+    leds->fade(LEDs::MAX);
   }
   else {
-    LEDs::getInstance() -> fade(LEDs::OFF);
+    leds->fade(LEDs::OFF);
   }
-  LEDs::getInstance() -> loop();
+  leds->loop();
 
-  Switch::SwitchValues state = Switch::getInstance()->getState();
-  if (state != lastSwitchState) {
-    if (state == Switch::LONGON) {
-      Serial.println("LONGON");
-    }
-    else if (state == Switch::ON) {
+  Switch::SwitchValues state = aSwitch->getState();
+  if (state == Switch::ONNEW) {
       Serial.println("ON");
-    }
-    lastSwitchState = state;
   }
+  if (state == Switch::LONGONNEW) {
+      Serial.println("LONGON");
+  }
+  
+  lastSwitchState = state; //?
+  
 }
 
 

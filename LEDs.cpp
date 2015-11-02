@@ -47,12 +47,6 @@ int LEDs::getLight() {
   return currentValue;
 }
 
-LEDs * LEDs::getInstance() {
-     if(!p_instance)           
-           p_instance = new LEDs();
-       return p_instance;
-}
-
 LEDs::LEDs() {
   currentValue = 0;
   runningValue = 0;
@@ -60,6 +54,4 @@ LEDs::LEDs() {
   lastFade = 0;
 }
 
-
-LEDs* LEDs::p_instance = 0;
 

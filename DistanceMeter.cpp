@@ -4,11 +4,6 @@
 #include "Arduino.h"
 
 
-DistanceMeter * DistanceMeter::getInstance() {
-     if(!p_instance)           
-           p_instance = new DistanceMeter();
-       return p_instance;
-   }
 
 boolean DistanceMeter::isSomebodyNear() {
     long currentsMillis = millis();
@@ -54,4 +49,4 @@ DistanceMeter::DistanceMeter() {
   lastLooking = 0;
 }
 
-DistanceMeter* DistanceMeter::p_instance = 0;
+

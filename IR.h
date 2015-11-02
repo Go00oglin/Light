@@ -8,8 +8,7 @@
 class IR {
   
   public:
-    static IR* getInstance();
-
+    IR();
     boolean isSomebodyNear();
     void loop();
     void setup();
@@ -17,8 +16,6 @@ class IR {
   private:
   const unsigned long TIME_INTERVAL = 3*60*1000L;
   unsigned long lastPresence = 0;
-  static IR* p_instance;
-  IR();
 };
 
 #endif
