@@ -8,6 +8,7 @@ void LEDs::setup(int pin) {
   pinMode(ledPin, OUTPUT);
 }
 
+/*
 void LEDs::setLight(int value) {
   if (value < 0) value = 0;
   if (value > 255) value = 255;
@@ -18,30 +19,56 @@ void LEDs::setLight(int value) {
   runningValue = value;
   lastFade = 0; //far far away
 }
+*/
 
-void LEDs::fade(int targetValue) {
+void LEDs::fade(int targetValue, long timeout) {
+  if (targetValue < 0) targetValue = 0;
+  if (targetValue > 255) targetValue = 255;
   if (currentValue != targetValue) {
     currentValue = targetValue;
     lastFade = 0; //far far away
   }
+  this->timeout = timeout*1000;
+  lightTimer = millis();
+  goOff = false;
+  Serial.print("fade:");
+  Serial.print(targetValue);
+  Serial.print(",");
+  Serial.println(timeout);
 }
 
 void LEDs::loop() {
-  if (runningValue == currentValue) {
-    return;
+  if (timeout > 0) {
+    // process timeout
+    if (millis() - lightTimer > timeout) {
+      Serial.println("loop timeout");
+      Serial.println(goOff);
+      if (!goOff) {
+        fade(currentValue / 3, 10);
+        goOff = true;
+      }
+      else {
+        fade(OFF,0);
+      }
+    }
   }
-  if (millis() - lastFade > FADE_DELAY) {
-    if (runningValue < currentValue) {
-      runningValue++;
+  if (runningValue != currentValue) {
+    if (millis() - lastFade > FADE_DELAY) {
+      if (runningValue < currentValue) {
+        runningValue++;
+      }
+      if (runningValue > currentValue) {
+        runningValue--;
+      }
+      analogWrite(ledPin, runningValue);
+      lastFade = millis();
     }
-    if (runningValue > currentValue) {
-      runningValue--;
-    }
-    analogWrite(ledPin, runningValue);
-    lastFade = millis();
   }
 }
 
+boolean LEDs::timerIsActive() {
+  return (timeout > 0);
+}
 
 int LEDs::getLight() {
   return currentValue;
@@ -52,6 +79,9 @@ LEDs::LEDs() {
   runningValue = 0;
   ledPin = 0;
   lastFade = 0;
+  timeout = 0;
+  lightTimer = 0;
+  goOff = false;
 }
 
 

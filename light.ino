@@ -3,9 +3,12 @@
 #include "IR.h"
 #include "Switch.h"
 
+const int LED_TIMEOUT = 15;// 3 * 60; //sec
+
 DistanceMeter * distanceMeter = new DistanceMeter();
 LEDs * leds = new LEDs();
 Switch * aSwitch = new Switch();
+IR * ir = new IR(); // может быть, поставить два?
 
 void setup() {
   // put your setup code here, to run once:
@@ -18,29 +21,49 @@ void setup() {
 Switch::SwitchValues lastSwitchState = Switch::OFF;
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  distanceMeter->lookAround();
+  // Test sensors
+  distanceMeter->loop();
   aSwitch->loop();
-  boolean q = distanceMeter->isSomebodyNear();
-  //Serial.println(q);
-  if (q) {
-    leds->fade(LEDs::MAX);
+  ir->loop();
+  if (leds->getLight() == LEDs::OFF){
+    // TODO: IR the first
+    if (aSwitch->getState() == Switch::ONNEW) {
+      turnSwitchOn();
+    }
   }
-  else {
-    leds->fade(LEDs::OFF);
+  else { // LEDs is ON
+    if (aSwitch->getState() == Switch::LONGONNEW) {
+        leds->fade(LEDs::MAX, 0);
+    }
+    else {
+      if (leds->timerIsActive()) {
+        // Prolong lihgting if somebody is inside
+        if (distanceMeter->isSomebodyNear()) {
+          turnSwitchOn();
+          Serial.println("Near");
+        }
+        // TODO: IF IR turnSwitchOn();
+      }
+    }
+    if (aSwitch->getState() == Switch::ONNEW) {
+      leds->fade(LEDs::OFF, 0);
+    }
   }
+  
+  //TODO: при выключении свича, сделать 1 секунду паузу игнорирования работы инфррадатчика, чтобы из дверного проема своим телом не включить свет еще раз
+ 
+  // fade and countdown processing
   leds->loop();
-
-  Switch::SwitchValues state = aSwitch->getState();
-  if (state == Switch::ONNEW) {
-      Serial.println("ON");
-  }
-  if (state == Switch::LONGONNEW) {
-      Serial.println("LONGON");
-  }
-  
-  lastSwitchState = state; //?
-  
 }
 
+
+void turnSwitchOn() {
+  boolean isNight = true;
+  if (isNight) {
+    leds->fade(LEDs::SHADOW, LED_TIMEOUT);
+  }
+  else {
+    leds->fade(LEDs::MAX, LED_TIMEOUT);
+  } 
+}
 

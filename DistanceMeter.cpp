@@ -14,7 +14,7 @@ boolean DistanceMeter::isSomebodyNear() {
     }
 }
 
-void DistanceMeter::lookAround() {
+void DistanceMeter::loop() {
       if (millis() - lastLooking > LOOKING_DELAY) {
         int duration, cm;
         digitalWrite(trigPin, LOW);

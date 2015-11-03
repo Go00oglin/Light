@@ -10,7 +10,7 @@ class DistanceMeter {
   public:
 
     boolean isSomebodyNear();
-    void lookAround();
+    void loop();
     void setup(int trigPin, int echoPin);
     DistanceMeter();
     
