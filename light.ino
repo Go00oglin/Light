@@ -1,7 +1,12 @@
+#include <Wire.h>
+#include <Time.h>
+#include <DS1307RTC.h>
+
 #include "DistanceMeter.h"
 #include "LEDs.h"
 #include "IR.h"
 #include "Switch.h"
+
 
 const int LED_TIMEOUT = 15;// 3 * 60; //sec
 
@@ -58,7 +63,20 @@ void loop() {
 
 
 void turnSwitchOn() {
-  boolean isNight = true;
+  tmElements_t tm;
+  boolean isNight = false;
+  if (RTC.read(tm)) {
+    if ((tm.Hour <= 6) || (tm.Hour >= 15)) {
+      isNight = true;
+    }
+  }
+  else {
+    if (RTC.chipPresent()) {
+      Serial.println("The DS1307 is stopped.  Please run the SetTime");
+    } else {
+      Serial.println("DS1307 read error!  Please check the circuitry.");
+    }
+  }
   if (isNight) {
     leds->fade(LEDs::SHADOW, LED_TIMEOUT);
   }

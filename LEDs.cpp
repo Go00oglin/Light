@@ -44,7 +44,7 @@ void LEDs::loop() {
       Serial.println("loop timeout");
       Serial.println(goOff);
       if (!goOff) {
-        fade(currentValue / 3, 10);
+        fade(currentValue / 5, 10);
         goOff = true;
       }
       else {
