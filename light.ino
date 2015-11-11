@@ -38,6 +38,7 @@ void loop() {
   }
   else { // LEDs is ON
     if (aSwitch->getState() == Switch::LONGONNEW) {
+        tone(12, 262, 200);
         leds->fade(LEDs::MAX, 0);
     }
     else {
