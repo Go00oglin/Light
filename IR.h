@@ -9,13 +9,15 @@ class IR {
   
   public:
     IR();
-    boolean isSomebodyNear();
+    boolean motionDetected();
     void loop();
-    void setup();
+    void setup(int pin);
+    void pause(long interval);
     
   private:
-  const unsigned long TIME_INTERVAL = 3*60*1000L;
-  unsigned long lastPresence = 0;
+  const unsigned long TIME_CALIBRATION = 30*1000L; //30 sec
+  int pirPin;
+  unsigned int pauseExpirationTime;  
 };
 
 #endif

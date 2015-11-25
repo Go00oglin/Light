@@ -31,18 +31,12 @@ void LEDs::fade(int targetValue, long timeout) {
   this->timeout = timeout*1000;
   lightTimer = millis();
   goOff = false;
-  Serial.print("fade:");
-  Serial.print(targetValue);
-  Serial.print(",");
-  Serial.println(timeout);
 }
 
 void LEDs::loop() {
   if (timeout > 0) {
     // process timeout
     if (millis() - lightTimer > timeout) {
-      Serial.println("loop timeout");
-      Serial.println(goOff);
       if (!goOff) {
         fade(currentValue / 5, 10);
         goOff = true;

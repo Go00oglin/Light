@@ -7,6 +7,29 @@
 #include "IR.h"
 #include "Switch.h"
 
+/*
+          +12V ---------- + LED STRIP        
+          -GND       ---- - LED STRIP
+               \   /
+                | |
+       +--------OUT---------+
+       |                    |
+       IR                   Distance
+       |                    |
+       |                    |
+       -                    Switch
+       |                    |
+       |                    |
+       +-----usb---power----+
+
+       RJ-6            IR       Switch     Distance    
+       +---------+
+       | +-+  =====    -        -          GRD
+     +-| | |  =====    DATA     DATA       ECHO
+     +-| | |  =====    GND      GND        TRIG
+       | +-+  =====    +5V      -          +5V
+       +---------+   
+*/
 
 const int LED_TIMEOUT = 15;// 3 * 60; //sec
 
@@ -21,6 +44,7 @@ void setup() {
   distanceMeter->setup(8 /*trig digital Pin*/, 9 /*echo digital Pin*/); 
   leds->setup(10); 
   aSwitch->setup(7);
+  ir->setup(2);
 }
 
 Switch::SwitchValues lastSwitchState = Switch::OFF;
@@ -31,14 +55,19 @@ void loop() {
   aSwitch->loop();
   ir->loop();
   if (leds->getLight() == LEDs::OFF){
-    // TODO: IR the first
+    if (ir->motionDetected()) {
+      Serial.println("Movement");
+      turnSwitchOn();
+    }
     if (aSwitch->getState() == Switch::ONNEW) {
+      Serial.println("Switch on");
       turnSwitchOn();
     }
   }
   else { // LEDs is ON
     if (aSwitch->getState() == Switch::LONGONNEW) {
         tone(12, 262, 200);
+        Serial.println("Switch on forever");
         leds->fade(LEDs::MAX, 0);
     }
     else {
@@ -48,15 +77,18 @@ void loop() {
           turnSwitchOn();
           Serial.println("Near");
         }
-        // TODO: IF IR turnSwitchOn();
+        if (ir->motionDetected()) {
+          turnSwitchOn();
+          Serial.println("Motion");
+        }
       }
     }
     if (aSwitch->getState() == Switch::ONNEW) {
+      Serial.println("Switch off");
+      ir->pause(5*1000L);
       leds->fade(LEDs::OFF, 0);
     }
   }
-  
-  //TODO: при выключении свича, сделать 1 секунду паузу игнорирования работы инфррадатчика, чтобы из дверного проема своим телом не включить свет еще раз
  
   // fade and countdown processing
   leds->loop();
